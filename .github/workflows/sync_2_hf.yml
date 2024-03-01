@@ -19,7 +19,7 @@ jobs:
       - name: Merge changes
         run: git merge origin/main --no-edit
       - name: Pull remote changes
-        run: git pull origin main
+        run: git pull --ff-only origin main
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
