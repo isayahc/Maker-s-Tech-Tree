@@ -10,19 +10,34 @@ jobs:
   sync-to-hub:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
           lfs: true
+
       - name: Fetch remote changes
         run: git fetch origin
+
       - name: Merge changes
         run: git merge origin/main --no-edit
+
       - name: Pull remote changes
         run: git pull --ff-only origin main
+
+      - name: Resolve conflicts (if any)
+        run: |
+          git status
+          git diff origin/main
+          # Resolve conflicts manually using git merge or git rebase
+
+      - name: Commit changes
+        run: git commit -am "Merge branch 'main' of https://github.com/${{ github.repository }}"
+
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_USERNAME: ${{ secrets.HF_USERNAME }}
           HF_SPACE_NAME: ${{ secrets.HF_SPACE_NAME }}
-        run: git push https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/$HF_SPACE_NAME main
+        run: |
+          git push https://$HF_USERNAME:$HF_TOKEN@huggingface.co/spaces/$HF_USERNAME/$HF_SPACE_NAME main
